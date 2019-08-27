@@ -1,13 +1,20 @@
 import { Request, Response } from "express";
+import { Functions } from '../../exerciseFunctions/types';
+import * as functionsService from '../../exerciseFunctions';
+import { Submissions } from '../../services/submission';
 
-let exerciseFunctions = require('../../exerciseFunctions');
-let SubmissionService = require('../../services/submission');
+export class Promotions {
 
-let submissionService = SubmissionService.Submissions.getInstanceDefault();
+	private functions: Functions;
+	private submissions: Submissions;
 
-class Promotion  {
-	submit(req: Request, res: Response) {
-		exerciseFunctions.getPromotionInstance(parseInt(req.params.promotionId))
+	protected constructor (functions: Functions, submissions: Submissions) {
+		this.functions = functions;
+		this.submissions = submissions;
+	}
+
+	submit = (req: Request, res: Response) => {
+		return this.functions.getPromotionInstance(parseInt(req.params.promotionId))
 		.then((promotion: any) => {
 			if(!promotion) throw new Error("No promotion found");
 
@@ -24,7 +31,7 @@ class Promotion  {
 				allDirectories = false;
 			}
 
-			return submissionService.submitSpam(promotion, directories, allDirectories, extraData);
+			return this.submissions.submitSpam(promotion, directories, allDirectories, extraData);
 		})
 		.then((result: any) => {
 			res.status(200);
@@ -45,10 +52,13 @@ class Promotion  {
 		})
 		.catch((e: Error) => console.log(e));
 	}
-}
 
-const promotion = new Promotion();
+	public static getInstance(functions: Functions, submissions: Submissions) {
+		return new Promotions(functions, submissions);
+	}
 
-export function getInstance() {
-	return promotion;
+	public static getInstanceDefault() {
+		return this.getInstance(functionsService, Submissions.getInstanceDefault());
+	}
+	
 }
