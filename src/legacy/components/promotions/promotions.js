@@ -1,5 +1,5 @@
 let exerciseFunctions = require('../../../exerciseFunctions');
-let SubmissionService = require('../../services/submission');
+let SubmissionService = require('../../../services/submission');
 
 let submissionService = new SubmissionService();
 

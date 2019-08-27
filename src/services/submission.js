@@ -1,4 +1,4 @@
-let {resizeImage, submitToGoogle, submitToFacebook, submitToYellowPages} = require('../../exerciseFunctions');
+let {resizeImage, submitToGoogle, submitToFacebook, submitToYellowPages} = require('../exerciseFunctions');
 
 var allDirectoriesList = "Google, Facebook, Yellow Pages";
 
