@@ -1,3 +1,3 @@
 export { Promotions } from './promotions';
-export { router as PromotionsRouter } from './router';
+export { routerFactory as PromotionsRouterFactory } from './router';
 

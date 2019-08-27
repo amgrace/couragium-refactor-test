@@ -57,8 +57,4 @@ export class Promotions {
 		return new Promotions(functions, submissions);
 	}
 
-	public static getInstanceDefault() {
-		return this.getInstance(functionsService, Submissions.getInstanceDefault());
-	}
-	
 }

@@ -56,9 +56,6 @@ export class Submissions {
 		return new Submissions(functions);
 	}
 
-	public static getInstanceDefault() {
-		return new Submissions(functionsService);
-	}
 }
 
 async function resizeImages(functions: Functions, data: any) {
