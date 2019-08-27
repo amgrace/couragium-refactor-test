@@ -1,4 +1,4 @@
-let promotionsComponent = require('./legacy/components/promotions');
+let promotionsComponent = require('./components/promotions');
 
 const express = require('express');
 const app = express();
