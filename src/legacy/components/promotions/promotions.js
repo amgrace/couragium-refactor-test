@@ -1,7 +1,7 @@
 let exerciseFunctions = require('../../../exerciseFunctions');
 let SubmissionService = require('../../../services/submission');
 
-let submissionService = new SubmissionService();
+let submissionService = SubmissionService.Submissions.getInstanceDefault();
 
 class Promotion  {
 	submit(req, res) {

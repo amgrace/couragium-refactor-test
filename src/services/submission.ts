@@ -1,9 +1,18 @@
-let {resizeImage, submitToGoogle, submitToFacebook, submitToYellowPages} = require('../exerciseFunctions');
+import {Functions} from '../exerciseFunctions/types';
+
+import * as functionsService from '../exerciseFunctions';
 
 var allDirectoriesList = "Google, Facebook, Yellow Pages";
 
 
-module.exports = class Submitter {
+export class Submissions {
+
+	private functions: Functions;
+
+	protected constructor (functions: Functions) {
+		this.functions = functions;
+	}
+
 	submitSpam(data: any, directories: any, allDirectories: any, extraData: any) {
 		if(extraData.start_date) data.start_date = extraData.start_date;
 		if(extraData.end_date) data.end_date = extraData.end_date;
@@ -20,13 +29,13 @@ module.exports = class Submitter {
 
 		let submittingDirectories: any = {};
 
-		return resizeImages(data)
+		return resizeImages(this.functions, data)
 		.then(() => {
 			var promises: any = [];
 
-			directories.filter((a: any) => a == "Google").map(() => submitToGoogle(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Google"] = promise});
-			directories.filter((a: any) => a == "Facebook").map(() => submitToFacebook(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Facebook"] = promise});
-			directories.filter((a: any) => a == "Yellow Pages").map(() => submitToYellowPages(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Yellow Pages"] = promise});	
+			directories.filter((a: any) => a == "Google").map(() => this.functions.submitToGoogle(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Google"] = promise});
+			directories.filter((a: any) => a == "Facebook").map(() => this.functions.submitToFacebook(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Facebook"] = promise});
+			directories.filter((a: any) => a == "Yellow Pages").map(() => this.functions.submitToYellowPages(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Yellow Pages"] = promise});	
 		
 			return Promise.all(promises);
 		})
@@ -42,13 +51,20 @@ module.exports = class Submitter {
 			});
 		});
 	}
+
+	public static getInstance(functions: Functions) {
+		return new Submissions(functions);
+	}
+
+	public static getInstanceDefault() {
+		return new Submissions(functionsService);
+	}
 }
 
-async function resizeImages(data: any) {
+async function resizeImages(functions: Functions, data: any) {
 	var index = 0;
 
 	data.images.forEach(async (image: any) => {
-		data.images[index++] = await resizeImage(image);
+		data.images[index++] = await functions.resizeImage(image);
 	});
 }
-
