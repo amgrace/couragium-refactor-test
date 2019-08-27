@@ -1,8 +1,8 @@
-let promotionsComponent = require('./components/promotions');
+import { PromotionsRouter } from './components/promotions'
 
 const express = require('express');
 const app = express();
 
-promotionsComponent.route(app);
+app.use(PromotionsRouter);
 
 export default app;
