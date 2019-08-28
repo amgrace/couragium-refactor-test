@@ -60,9 +60,7 @@ function mockResponse() {
 }
 
 function mockNextFunction() {
-	return (err?: any) => {
-		console.error('Error mocking: ' + err);
-	};
+	return (err?: any) => {};
 }
 
 function mockPromotion(): Promotion {

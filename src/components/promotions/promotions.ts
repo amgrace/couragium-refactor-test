@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Functions } from '../../exerciseFunctions/types';
 import { Submissions } from '../../services/submission';
 import { NotFoundException } from "../../exceptions/NotFoundException";
+import { DIRECTORIES } from '../../services/directories'
 
 export class Promotions {
 
@@ -23,15 +24,9 @@ export class Promotions {
 			if(promotion.start_date.getTime() < (new Date).getTime())
 				extraData.start_date = new Date();
 
-			var allDirectories = true;
-			var directories = [];
+			let directories = this.parseDirectories(req.query.directories);
 
-			if(req.query.directories) {
-				directories = req.query.directories.split(',').map((a: String) => a.trim());
-				allDirectories = false;
-			}
-
-			return this.submissions.submitSpam(promotion, directories, allDirectories, extraData);
+			return this.submissions.submitSpam(promotion, directories, extraData);
 		})
 		.then((result: any) => {
 			res.json(result);
@@ -39,6 +34,14 @@ export class Promotions {
 		.catch((e: Error) => {
 			next(e);
 		});
+	}
+
+	private parseDirectories(directories: string) {
+		if(directories) {
+			return directories.split(',').map((a: String) => a.trim());
+		} else {
+			return DIRECTORIES;
+		}
 	}
 
 	public static getInstance(functions: Functions, submissions: Submissions) {

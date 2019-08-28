@@ -1,9 +1,6 @@
 import {Functions} from '../exerciseFunctions/types';
 
-import * as functionsService from '../exerciseFunctions';
-
-var allDirectoriesList = "Google, Facebook, Yellow Pages";
-
+const DIRECTORIES = ['Google', 'Facebook', 'Yellow Pages'];
 
 export class Submissions {
 
@@ -13,7 +10,7 @@ export class Submissions {
 		this.functions = functions;
 	}
 
-	submitSpam(data: any, directories: any, allDirectories: any, extraData: any) {
+	submitSpam(data: any, directories: string[], extraData: any) {
 		if(extraData.start_date) data.start_date = extraData.start_date;
 		if(extraData.end_date) data.end_date = extraData.end_date;
 
@@ -21,10 +18,6 @@ export class Submissions {
 			data.type = "FOREVER";
 		} else {
 			data.type = "TEMPORARY";
-		}
-
-		if(allDirectories) {
-			directories = allDirectoriesList.split(',').map(dir => dir.trim());
 		}
 
 		let submittingDirectories: any = {};
