@@ -19,14 +19,9 @@ export class Promotions {
 		.then((promotion: any) => {
 			if(!promotion) throw new NotFoundException("No promotion found");
 
-			let extraData: any = {};
-
-			if(promotion.start_date.getTime() < (new Date).getTime())
-				extraData.start_date = new Date();
-
 			let directories = this.parseDirectories(req.query.directories);
 
-			return this.submissions.submitSpam(promotion, directories, extraData);
+			return this.submissions.submitSpam(promotion, directories);
 		})
 		.then((result: any) => {
 			res.json(result);

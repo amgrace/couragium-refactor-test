@@ -1,6 +1,4 @@
-import {Functions} from '../exerciseFunctions/types';
-
-const DIRECTORIES = ['Google', 'Facebook', 'Yellow Pages'];
+import {Functions, Promotion} from '../exerciseFunctions/types';
 
 export class Submissions {
 
@@ -10,25 +8,18 @@ export class Submissions {
 		this.functions = functions;
 	}
 
-	submitSpam(data: any, directories: string[], extraData: any) {
-		if(extraData.start_date) data.start_date = extraData.start_date;
-		if(extraData.end_date) data.end_date = extraData.end_date;
-
-		if(!data.end_date || !data.end_date) {
-			data.type = "FOREVER";
-		} else {
-			data.type = "TEMPORARY";
-		}
+	submitSpam(promotion: Partial<Promotion>, directories: string[]) {
+		let promotionToSend = this.preparePromotion(promotion);
 
 		let submittingDirectories: any = {};
 
-		return resizeImages(this.functions, data)
+		return resizeImages(this.functions, promotionToSend)
 		.then(() => {
 			var promises: any = [];
 
-			directories.filter((a: any) => a == "Google").map(() => this.functions.submitToGoogle(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Google"] = promise});
-			directories.filter((a: any) => a == "Facebook").map(() => this.functions.submitToFacebook(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Facebook"] = promise});
-			directories.filter((a: any) => a == "Yellow Pages").map(() => this.functions.submitToYellowPages(data).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Yellow Pages"] = promise});	
+			directories.filter((a: any) => a == "Google").map(() => this.functions.submitToGoogle(promotionToSend).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Google"] = promise});
+			directories.filter((a: any) => a == "Facebook").map(() => this.functions.submitToFacebook(promotionToSend).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Facebook"] = promise});
+			directories.filter((a: any) => a == "Yellow Pages").map(() => this.functions.submitToYellowPages(promotionToSend).catch((e: Error) => e)).forEach((promise: any) => {promises.push(promise); submittingDirectories["Yellow Pages"] = promise});	
 		
 			return Promise.all(promises);
 		})
@@ -43,6 +34,21 @@ export class Submissions {
 				}
 			});
 		});
+	}
+
+	private preparePromotion(promotion: Partial<Promotion>): Promotion {
+		let promotionToSend: any = Object.assign({}, promotion);
+
+		if(!promotionToSend.start_date || promotionToSend.start_date.getTime() < (new Date).getTime()) {
+			promotionToSend.start_date = new Date();
+		}
+
+		if(!promotionToSend.end_date) {
+			promotionToSend.type = "FOREVER";
+		} else {
+			promotionToSend.type = "TEMPORARY";
+		}
+		return promotionToSend;
 	}
 
 	public static getInstance(functions: Functions) {
