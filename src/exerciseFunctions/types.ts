@@ -8,7 +8,6 @@ export type Promotion = {
 };
 
 export interface Functions {
-	getPromotionInstance (id: number): Promise<Promotion | null>;
 	resizeImage(image: Buffer): Buffer;
 	submitToGoogle(data: Promotion): Promise<{message: 'submitted'}>;
  	submitToFacebook(data: Promotion): Promise<{message: 'submitted'}>;

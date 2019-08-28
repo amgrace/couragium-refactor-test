@@ -94,7 +94,6 @@ function mockPromotion(): Promotion {
 
 function mockFunctions(promotion: Promotion): Functions {
 	return {
-		getPromotionInstance: (id: number) => Promise.resolve(promotion),
 		resizeImage: (image: Buffer) => image,
 		submitToGoogle: (data: Promotion) => Promise.resolve({message: 'submitted'}),
 		submitToFacebook: (data: Promotion) => Promise.resolve({message: 'submitted'}),

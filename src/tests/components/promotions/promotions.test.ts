@@ -7,6 +7,7 @@ import { Promotions } from "../../../components/promotions";
 import { Submissions } from "../../../services/submission";
 import { Request, Response } from "express";
 import { Dictionary } from "express-serve-static-core";
+import { PromotionsRepository } from "repositories/PromotionsRepository";
 
 chai.use(spies);
 
@@ -72,9 +73,14 @@ function mockPromotion(): Promotion {
 	};
 }
 
-function mockFunctions(promotion: Promotion | null): Functions {
+function mockRepository(promotion: Promotion | null): PromotionsRepository {
 	return {
-		getPromotionInstance: (id: number) => Promise.resolve(promotion),
+		getPromotionInstance: (id: number) => Promise.resolve(promotion)
+	};
+}
+
+function mockFunctions(): Functions {
+	return {
 		resizeImage: (image: Buffer) => image,
 		submitToGoogle: (data: Promotion) =>
 			Promise.resolve({ message: "submitted" }),
@@ -86,9 +92,10 @@ function mockFunctions(promotion: Promotion | null): Functions {
 }
 
 function mockPromotions(promotion: Promotion | null) {
-	let functions = mockFunctions(promotion);
+	let repository = mockRepository(promotion);
+	let functions = mockFunctions();
 	let submissions = Submissions.getInstance(functions);
-	let promotions: Promotions = Promotions.getInstance(functions, submissions);
+	let promotions: Promotions = Promotions.getInstance(repository, submissions);
 
 	return { promotions };
 }

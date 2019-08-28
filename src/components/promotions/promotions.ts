@@ -1,21 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import { Functions } from '../../exerciseFunctions/types';
 import { Submissions } from '../../services/submission';
 import { NotFoundException } from "../../exceptions/NotFoundException";
 import { DIRECTORIES } from '../../services/directories'
+import { PromotionsRepository } from "repositories/PromotionsRepository";
 
 export class Promotions {
 
-	private functions: Functions;
+	private promotionsRepository: PromotionsRepository;
 	private submissions: Submissions;
 
-	protected constructor (functions: Functions, submissions: Submissions) {
-		this.functions = functions;
+	protected constructor (promotionsRepository: PromotionsRepository, submissions: Submissions) {
+		this.promotionsRepository = promotionsRepository;
 		this.submissions = submissions;
 	}
 
 	submit = (req: Request, res: Response, next: NextFunction) => {
-		return this.functions.getPromotionInstance(parseInt(req.params.promotionId))
+		return this.promotionsRepository.getPromotionInstance(parseInt(req.params.promotionId))
 		.then((promotion: any) => {
 			if(!promotion) throw new NotFoundException("No promotion found");
 
@@ -39,8 +39,8 @@ export class Promotions {
 		}
 	}
 
-	public static getInstance(functions: Functions, submissions: Submissions) {
-		return new Promotions(functions, submissions);
+	public static getInstance(repository: PromotionsRepository, submissions: Submissions) {
+		return new Promotions(repository, submissions);
 	}
 
 }
