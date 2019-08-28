@@ -34,9 +34,7 @@ export class Promotions {
 			return this.submissions.submitSpam(promotion, directories, allDirectories, extraData);
 		})
 		.then((result: any) => {
-			res.status(200);
-			res.setHeader('Content-Type', 'application/json');
-			res.end(JSON.stringify(result));
+			res.json(result);
 		})
 		.catch((e: Error) => {
 			next(e);

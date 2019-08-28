@@ -34,11 +34,11 @@ describe("Submit a promotion", function() {
 		let req = mockRequest({ promotionId: "42" }, {});
 		let res = mockResponse();
 		let spyNext = chai.spy(mockNextFunction());
-		let spyResponse = chai.spy.on(res, 'status');
+		let spyResponse = chai.spy.on(res, 'json');
 
 		await promotions.submit(req, res, spyNext);
 		expect(spyNext).to.not.have.been.called();
-		expect(spyResponse).to.have.been.called.with(200);
+		expect(spyResponse).to.have.been.called();
 	});
 
 });
