@@ -5,7 +5,7 @@ const chai = require("chai");
 import { Functions, Promotion } from "../../../exerciseFunctions/types";
 import { Promotions } from "../../../components/promotions";
 import { Submissions } from "../../../services/submission";
-import { Request, Response, response } from "express";
+import { Request, Response } from "express";
 import { Dictionary } from "express-serve-static-core";
 
 chai.use(spies);
@@ -21,23 +21,23 @@ describe("Submit a promotion", function() {
 
 		let req = mockRequest({ promotionId: "0" }, {});
 		let res = mockResponse();
+		let spyNext = chai.spy(mockNextFunction());
 
-		let spyResponse = chai.spy.on(res, 'status');
-
-		await promotions.submit(req, res);
-		expect(spyResponse).to.have.been.called.with(400);
+		await promotions.submit(req, res, spyNext);
+		expect(spyNext).to.have.been.called();
 	});
 
-	it("that doesn't exists returns 200", async function() {
+	it("that exists returns 200", async function() {
 		let promotion = mockPromotion();
 		let { promotions } = mockPromotions(promotion);
 
 		let req = mockRequest({ promotionId: "42" }, {});
 		let res = mockResponse();
-
+		let spyNext = chai.spy(mockNextFunction());
 		let spyResponse = chai.spy.on(res, 'status');
 
-		await promotions.submit(req, res);
+		await promotions.submit(req, res, spyNext);
+		expect(spyNext).to.not.have.been.called();
 		expect(spyResponse).to.have.been.called.with(200);
 	});
 
@@ -51,12 +51,18 @@ function mockRequest(params: Dictionary<string>, query: any) {
 }
 
 function mockResponse() {
-	let res: Response = {} as Response;
+	let res = {} as Response;
 	res.status = (code: number) => res;
 	res.json = (body?: any) => res;
 	res.setHeader = (field: string, value?: string | number | string[]) => res;
 	res.end = (body: any) => res;
-	return response;
+	return res;
+}
+
+function mockNextFunction() {
+	return (err?: any) => {
+		console.error('Error mocking: ' + err);
+	};
 }
 
 function mockPromotion(): Promotion {
@@ -83,13 +89,6 @@ function mockFunctions(promotion: Promotion | null): Functions {
 
 function mockPromotions(promotion: Promotion | null) {
 	let functions = mockFunctions(promotion);
-	let foo: Promise<
-		{
-			directory: string;
-			status: any;
-		}[]
-	>;
-
 	let submissions = Submissions.getInstance(functions);
 	let promotions: Promotions = Promotions.getInstance(functions, submissions);
 

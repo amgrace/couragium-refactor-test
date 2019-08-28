@@ -5,7 +5,7 @@ const chai = require("chai");
 
 chai.use(chaiHttp);
 
-describe("Submit a promotion", function() {
+describe("[Regression] Submit a promotion", function() {
 	this.timeout(7000);
 	it("that doesn't exists returns 400", function(done) {
 		chai

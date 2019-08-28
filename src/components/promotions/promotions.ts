@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Functions } from '../../exerciseFunctions/types';
-import * as functionsService from '../../exerciseFunctions';
 import { Submissions } from '../../services/submission';
+import { NotFoundException } from "../../exceptions/NotFoundException";
 
 export class Promotions {
 
@@ -13,10 +13,10 @@ export class Promotions {
 		this.submissions = submissions;
 	}
 
-	submit = (req: Request, res: Response) => {
+	submit = (req: Request, res: Response, next: NextFunction) => {
 		return this.functions.getPromotionInstance(parseInt(req.params.promotionId))
 		.then((promotion: any) => {
-			if(!promotion) throw new Error("No promotion found");
+			if(!promotion) throw new NotFoundException("No promotion found");
 
 			let extraData: any = {};
 
@@ -39,18 +39,8 @@ export class Promotions {
 			res.end(JSON.stringify(result));
 		})
 		.catch((e: Error) => {
-			console.log(e)
-			if(e && e.message && e.message === "No promotion found") {
-				res.status(400);
-				res.setHeader('Content-Type', 'application/json');
-				res.end(JSON.stringify({message: "Not found"}));
-			} else {
-				res.status(500);
-				res.setHeader('Content-Type', 'application/json');
-				res.end(JSON.stringify({message: "Internal Error"}));
-			}
-		})
-		.catch((e: Error) => console.log(e));
+			next(e);
+		});
 	}
 
 	public static getInstance(functions: Functions, submissions: Submissions) {
