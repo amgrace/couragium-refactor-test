@@ -8,6 +8,7 @@ import { Submissions } from "../../../services/submission";
 import { Request, Response } from "express";
 import { Dictionary } from "express-serve-static-core";
 import { PromotionsRepository } from "repositories/PromotionsRepository";
+import { DirectoryHub } from "../../../services/directories";
 
 chai.use(spies);
 
@@ -94,7 +95,7 @@ function mockFunctions(): Functions {
 function mockPromotions(promotion: Promotion | null) {
 	let repository = mockRepository(promotion);
 	let functions = mockFunctions();
-	let submissions = Submissions.getInstance(functions);
+	let submissions = Submissions.getInstance(DirectoryHub.getInstance());
 	let promotions: Promotions = Promotions.getInstance(repository, submissions);
 
 	return { promotions };

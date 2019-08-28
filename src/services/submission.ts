@@ -1,32 +1,30 @@
-import { Functions, Promotion } from "../exerciseFunctions/types";
+import { Promotion } from "../exerciseFunctions/types";
 import { promisify } from 'util';
+import { DirectoryHub } from "./directories";
 const workerFarm = require('worker-farm');
 const workers = workerFarm(require.resolve('./workers/resizeImage'));
 
 export class Submissions {
-	private functions: Functions;
+	private directoryHub: DirectoryHub;
 
-	protected constructor(functions: Functions) {
-		this.functions = functions;
+	protected constructor(directoryHub: DirectoryHub) {
+		this.directoryHub = directoryHub;
 	}
 
-	submitSpam(promotion: Partial<Promotion>, directories: string[]) {
+	async submitSpam(promotion: Partial<Promotion>, directories: string[]) {
 		let promotionToSend = this.preparePromotion(promotion);
 
-		return resizeImages(promotionToSend).then(() => {
-			let promises = []
-			if (directories.indexOf('Google') > -1) {
-				promises.push(this.mapPromiseToStatus("Google", this.functions.submitToGoogle(promotionToSend)));
-			}
-			if (directories.indexOf('Facebook') > -1) {
-				promises.push(this.mapPromiseToStatus("Facebook", this.functions.submitToFacebook(promotionToSend)));
-			}
-			if (directories.indexOf('Yellow Pages') > -1) {
-				promises.push(this.mapPromiseToStatus("Yellow Pages", this.functions.submitToYellowPages(promotionToSend)));
-			}
-		
-			return Promise.all(promises);
-		});
+		let submitFunctions = this.getSubmitFunctions(directories);
+		if (submitFunctions.length == 0) {
+			return [];
+		}
+
+		await resizeImages(promotionToSend);
+		return Promise.all(
+			submitFunctions
+			.map (directory => 
+				this.mapPromiseToStatus(directory.name, directory.submitFunction(promotionToSend)))
+		);
 	}
 
 	private preparePromotion(promotion: Partial<Promotion>): Promotion {
@@ -47,6 +45,16 @@ export class Submissions {
 		return promotionToSend;
 	}
 
+	private getSubmitFunctions(directories: string[]) {
+		return directories.map((directory: string) => { 
+			return {
+				name: directory,
+				submitFunction: this.directoryHub.getSubmitFunction(directory) as (data: Promotion) => Promise<any>
+			}
+		})
+		.filter( directory => !!directory.submitFunction);
+	}
+
 	private mapPromiseToStatus(directory: string, promise: Promise<any>) {
 		return promise
 			.catch((error: any) => error)
@@ -56,8 +64,8 @@ export class Submissions {
 		return { directory, status };
 	}
 
-	public static getInstance(functions: Functions) {
-		return new Submissions(functions);
+	public static getInstance(directoryHub: DirectoryHub) {
+		return new Submissions(directoryHub);
 	}
 }
 

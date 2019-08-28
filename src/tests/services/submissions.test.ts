@@ -4,7 +4,7 @@ const chai = require("chai");
 
 import { Functions, Promotion } from '../../exerciseFunctions/types';
 import { Submissions } from '../../services/submission';
-import { DIRECTORIES } from '../../services/directories'
+import { DIRECTORIES, DirectoryHub } from '../../services/directories'
 
 chai.use(spies);
 
@@ -106,8 +106,12 @@ function mockSubmissions() {
 	let spyGoogle = chai.spy.on(functions, 'submitToGoogle');
 	let spyFacebook = chai.spy.on(functions, 'submitToFacebook');
 	let spyYellowPages = chai.spy.on(functions, 'submitToYellowPages');
+	let directoryHub = DirectoryHub.getInstance()
+	.addSubmitFunction('Google', functions.submitToGoogle)
+	.addSubmitFunction('Facebook', functions.submitToFacebook)
+	.addSubmitFunction('Yellow Pages', functions.submitToYellowPages)
 
-	let submissions = Submissions.getInstance(functions);
+	let submissions = Submissions.getInstance(directoryHub);
 
 	return { submissions, spyGoogle, spyFacebook, spyYellowPages };
 }
