@@ -2,6 +2,7 @@ import chaiHttp = require("chai-http");
 const expect = require("chai").expect;
 import server from "../server";
 const chai = require("chai");
+import { DIRECTORY } from '../services/directories';
 
 chai.use(chaiHttp);
 
@@ -51,7 +52,7 @@ describe("[Regression] Submit a promotion", function() {
 				expect(response).to.be.json;
 				const body = JSON.parse(response.text)
 				expect(body.length).to.eq(1);
-				expect(body[0].directory).to.eq('Google');
+				expect(body[0].directory).to.eq(DIRECTORY.GOOGLE);
 				done();
 			});
 	});
@@ -65,7 +66,7 @@ describe("[Regression] Submit a promotion", function() {
 				expect(response).to.be.json;
 				const body = JSON.parse(response.text)
 				expect(body.length).to.eq(1);
-				expect(body[0].directory).to.eq('Facebook');
+				expect(body[0].directory).to.eq(DIRECTORY.FACEBOOK);
 				done();
 			});
 	});
@@ -79,7 +80,7 @@ describe("[Regression] Submit a promotion", function() {
 				expect(response).to.be.json;
 				const body = JSON.parse(response.text)
 				expect(body.length).to.eq(1);
-				expect(body[0].directory).to.eq('Yellow Pages');
+				expect(body[0].directory).to.eq(DIRECTORY.YELLOW_PAGES);
 				done();
 			});
 	});

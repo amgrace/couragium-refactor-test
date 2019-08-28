@@ -4,7 +4,7 @@ const chai = require("chai");
 
 import { Functions, Promotion } from '../../exerciseFunctions/types';
 import { Submissions } from '../../services/submission';
-import { DIRECTORIES, DirectoryHub } from '../../services/directories'
+import { DIRECTORY, DIRECTORIES, DirectoryHub } from '../../services/directories'
 
 chai.use(spies);
 
@@ -19,7 +19,7 @@ describe("Submit span", function() {
 		expected.start_date = new Date();
 		expected.type = 'FOREVER';
 
-		await submissions.submitSpam(data, ['Google']);
+		await submissions.submitSpam(data, [DIRECTORY.GOOGLE]);
 		expect(spyGoogle).to.have.been.called();
 	});
 
@@ -32,7 +32,7 @@ describe("Submit span", function() {
 		expected.start_date = new Date();
 		expected.type = 'TEMPORARY';
 
-		await submissions.submitSpam(data, ['Google']);
+		await submissions.submitSpam(data, [DIRECTORY.GOOGLE]);
 		expect(spyGoogle).to.have.been.called();
 	});
 
@@ -57,7 +57,7 @@ describe("Submit span", function() {
 	it("to Google directory, sends only to Google", async function() {
 		let promotion = mockPromotion();
 		let { submissions, spyGoogle, spyFacebook, spyYellowPages } = mockSubmissions();
-		let response = await submissions.submitSpam(promotion, ['Google']);
+		let response = await submissions.submitSpam(promotion, [DIRECTORY.GOOGLE]);
 		expect(spyGoogle).to.have.been.called();
 		expect(spyFacebook).to.not.have.been.called();
 		expect(spyYellowPages).to.not.have.been.called();
@@ -66,7 +66,7 @@ describe("Submit span", function() {
 	it("to Facebook directory, sends only to Facebook", async function() {
 		let promotion = mockPromotion();
 		let { submissions, spyGoogle, spyFacebook, spyYellowPages } = mockSubmissions();
-		let response = await submissions.submitSpam(promotion, ['Facebook']);
+		let response = await submissions.submitSpam(promotion, [DIRECTORY.FACEBOOK]);
 		expect(spyGoogle).to.not.have.been.called();
 		expect(spyFacebook).to.have.been.called();
 		expect(spyYellowPages).to.not.have.been.called();
@@ -75,7 +75,7 @@ describe("Submit span", function() {
 	it("to Yellow Pages directory, sends only to Yellow Pages", async function() {
 		let promotion = mockPromotion();
 		let { submissions, spyGoogle, spyFacebook, spyYellowPages } = mockSubmissions();
-		let response = await submissions.submitSpam(promotion, ['Yellow Pages']);
+		let response = await submissions.submitSpam(promotion, [DIRECTORY.YELLOW_PAGES]);
 		expect(spyGoogle).to.not.have.been.called();
 		expect(spyFacebook).to.not.have.been.called();
 		expect(spyYellowPages).to.have.been.called();
@@ -107,9 +107,9 @@ function mockSubmissions() {
 	let spyFacebook = chai.spy.on(functions, 'submitToFacebook');
 	let spyYellowPages = chai.spy.on(functions, 'submitToYellowPages');
 	let directoryHub = DirectoryHub.getInstance()
-	.addSubmitFunction('Google', functions.submitToGoogle)
-	.addSubmitFunction('Facebook', functions.submitToFacebook)
-	.addSubmitFunction('Yellow Pages', functions.submitToYellowPages)
+	.addSubmitFunction(DIRECTORY.GOOGLE, functions.submitToGoogle)
+	.addSubmitFunction(DIRECTORY.FACEBOOK, functions.submitToFacebook)
+	.addSubmitFunction(DIRECTORY.YELLOW_PAGES, functions.submitToYellowPages)
 
 	let submissions = Submissions.getInstance(directoryHub);
 
