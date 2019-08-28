@@ -1,4 +1,7 @@
 import { Functions, Promotion } from "../exerciseFunctions/types";
+import { promisify } from 'util';
+const workerFarm = require('worker-farm');
+const workers = workerFarm(require.resolve('./workers/resizeImage'));
 
 export class Submissions {
 	private functions: Functions;
@@ -10,7 +13,7 @@ export class Submissions {
 	submitSpam(promotion: Partial<Promotion>, directories: string[]) {
 		let promotionToSend = this.preparePromotion(promotion);
 
-		return resizeImages(this.functions, promotionToSend).then(() => {
+		return resizeImages(promotionToSend).then(() => {
 			let promises = []
 			if (directories.indexOf('Google') > -1) {
 				promises.push(this.mapPromiseToStatus("Google", this.functions.submitToGoogle(promotionToSend)));
@@ -58,10 +61,9 @@ export class Submissions {
 	}
 }
 
-async function resizeImages(functions: Functions, data: any) {
-	var index = 0;
+async function resizeImages(promotion: Promotion) {
+	let resizeImageAsync = promisify(workers);
 
-	data.images.forEach(async (image: any) => {
-		data.images[index++] = await functions.resizeImage(image);
-	});
+	let images = await Promise.all(promotion.images.map(image => resizeImageAsync(image)));
+	promotion.images = images;
 }

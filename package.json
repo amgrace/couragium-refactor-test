@@ -11,7 +11,8 @@
   "author": "Couragium Solutions S.L.",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "worker-farm": "^1.7.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.0",
